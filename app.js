@@ -4,11 +4,11 @@ const postBank = require("./postBank");
 
 const app = express();
 app.use(morgan('dev'));
+
 app.use(express.static('public'));
 app.use(express.static('files'));
 
-app.get("/", (req, res) => {
-
+app.get("/", (request, response) => {
   const posts = postBank.list();
 
   const html = `<!DOCTYPE html>
@@ -23,7 +23,8 @@ app.get("/", (req, res) => {
       ${posts.map(post => `
         <div class='news-item'>
           <p>
-            <span class="news-position">${post.id}. ▲</span><a href="/posts/${post.id}">${post.title}</a>
+            <span class="news-position">${post.id}. ▲</span>
+            <a href="/posts/${post.id}/">${post.title}</a>
             <small>(by ${post.name})</small>
           </p>
           <small class="news-info">
@@ -35,12 +36,11 @@ app.get("/", (req, res) => {
   </body>
 </html>`;
 
-
-  res.send(html);
+  response.send(html);
 });
 
-app.get('/posts/:id', (req, res) => {
-  const id = req.params.id;
+app.get("/posts/:id", (request, response) => {
+  const id = request.params.id;
   const post = postBank.find(id);
 
   if (!post.id) {
@@ -65,14 +65,13 @@ app.get('/posts/:id', (req, res) => {
         </div>
     </div>
   </body>
-</html>`;
+</html>`
 
-  res.send(html);
+  response.send(html);
 });
 
 const { PORT = 1337 } = process.env;
 
 app.listen(PORT, () => {
-  console.log(`App listening in port ${PORT}`);
-
+  console.log(`App listening on port ${PORT} `);
 });
